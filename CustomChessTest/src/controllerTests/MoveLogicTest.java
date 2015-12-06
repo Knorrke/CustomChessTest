@@ -20,6 +20,7 @@ public class MoveLogicTest {
 		when(piecemock.getPosition()).thenReturn(position);
 		
 		MoveLogic testml = new MoveLogic(boardmock,piecemock,"1,0");
+		testml.addBehavioursAutomatically();
 
 		assertTrue("Should be able to move one to the right", testml.moveCorrect(new int[]{6,5}));
 		assertTrue("Should be able to move one to the left", testml.moveCorrect(new int[]{4,5}));
