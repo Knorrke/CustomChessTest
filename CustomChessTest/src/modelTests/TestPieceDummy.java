@@ -15,6 +15,6 @@ public class TestPieceDummy extends Piece {
 	}
 
 	public void initializeView() {
-		setView(g->{});
+		setView(()->{});
 	}
 }
