@@ -8,9 +8,13 @@ import org.junit.Test;
 
 import model.Board;
 import model.PieceFactory;
+import model.pieces.Dummy;
+import model.pieces.King;
 import model.pieces.Piece;
 import model.pieces.decorator.AdditionalMoveAllowanceDecorator;
 import model.pieces.decorator.DecoratedPieceFactory;
+import model.pieces.decorator.KnightRiding;
+import model.pieces.decorator.Mighty;
 import player.PlayerColor;
 
 public class DecoratorTest {
@@ -23,6 +27,16 @@ public class DecoratorTest {
 		playerColor = PlayerColor.BLACK;
 		opponentColor = playerColor.getOppositColor();
 		boardmock = mock(Board.class);
+	}
+	
+	@Test
+	public void factoryTest() {
+		Piece piece = DecoratedPieceFactory.newDecoratedPiece("Mighty KnightRiding",
+				PieceFactory.newPiece(boardmock, "King", playerColor, new int[] {2,2}));
+		assertTrue("Piece should be of class Mighty", piece.getType().contains(Mighty.class));
+		assertTrue("Piece should be of class KnightRiding", piece.getType().contains(KnightRiding.class));
+		assertTrue("Piece should be of class King", piece.getType().contains(King.class));
+		assertFalse("Piece should not be of class Dummy", piece.getType().contains(Dummy.class));
 	}
 	@Test
 	public void mightyTest(){
@@ -111,7 +125,7 @@ public class DecoratorTest {
 				PieceFactory.newPiece(boardmock, "Knight", playerColor, new int[] {x+1,y+1})) {};
 				
 		Piece king = DecoratedPieceFactory.newDecoratedPiece("KnightRiding",
-				PieceFactory.newPiece(boardmock, "King",playerColor,new int[] {x,y}));
+				PieceFactory.newPiece(boardmock, "King", playerColor, new int[] {x,y}));
 
 		for(int i=-1; i<=1; i++) {
 			for(int j=-1; j<=1; j++) {				
@@ -130,5 +144,4 @@ public class DecoratorTest {
 		assertFalse("King should not be able to move weird, even if adjacent to knight",
 				king.moveCorrect(new int[] {x+1,y+3}));
 	}
-	
 }
