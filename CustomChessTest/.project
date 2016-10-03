@@ -3,6 +3,7 @@
 	<name>CustomChessTest</name>
 	<comment></comment>
 	<projects>
+		<project>CustomChess</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

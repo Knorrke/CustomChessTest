@@ -10,7 +10,6 @@ import gameController.gameConditionsStrategy.MightyNotAttacked;
 import model.Board;
 import model.PieceFactory;
 import model.pieces.Piece;
-import model.pieces.decorator.DecoratedPieceFactory;
 import player.PlayerColor;
 
 public class GameConditionTest {
@@ -28,15 +27,19 @@ public class GameConditionTest {
 		opponentColor = playerColor.getOppositColor();
 	}
 	
+
+	@Test
+	public void migthyNotAttackedCheckAllowedTest() {
+		Piece king = PieceFactory.newPiece(board, "Mighty King", playerColor, new int[] {4,4});
+		Piece attacker = PieceFactory.newPiece(board, "Rook", opponentColor, new int[] {6,5});
+		
+		assertTrue("Check is allowed", cond.isGameIntegrityEnsured(board, attacker, new int[] {6,4}));
+		assertFalse("Move into check is not allowed", cond.isGameIntegrityEnsured(board, king, new int[] {4,5}));
+	}
+	
 	@Test
 	public void mightyNotAttackedPinnedTest() {
-		GameCondition cond = new MightyNotAttacked();
-		Board board = new Board(8, 8);
-		PlayerColor playerColor = PlayerColor.BLACK;
-		PlayerColor opponentColor = playerColor.getOppositColor();
-		
-		Piece king = DecoratedPieceFactory.newDecoratedPiece("Mighty",
-				PieceFactory.newPiece(board, "King", playerColor, new int[] {4,4}));
+		Piece king = PieceFactory.newPiece(board, "Mighty King", playerColor, new int[] {4,4});
 		Piece pinnedPiece = PieceFactory.newPiece(board, "Bishop", playerColor, new int[] {5,4});
 		Piece attacker = PieceFactory.newPiece(board, "Rook", opponentColor, new int[] {6,4});
 		
@@ -50,13 +53,7 @@ public class GameConditionTest {
 	
 	@Test
 	public void mightyNotAttackedIntermittingTest() {
-		GameCondition cond = new MightyNotAttacked();
-		Board board = new Board(8, 8);
-		PlayerColor playerColor = PlayerColor.BLACK;
-		PlayerColor opponentColor = playerColor.getOppositColor();
-		
-		Piece king = DecoratedPieceFactory.newDecoratedPiece("Mighty",
-				PieceFactory.newPiece(board, "King", playerColor, new int[] {4,4}));
+		Piece king = PieceFactory.newPiece(board, "Mighty King", playerColor, new int[] {4,4});
 		Piece intermittingPiece = PieceFactory.newPiece(board, "Bishop", playerColor, new int[] {4,3});
 		Piece attacker = PieceFactory.newPiece(board, "Rook", opponentColor, new int[] {6,4});
 		
@@ -72,10 +69,9 @@ public class GameConditionTest {
 	
 	@Test
 	public void mightyNotAttackedMultipleKingsCaptureAttackerTest() {
-		Piece king = DecoratedPieceFactory.newDecoratedPiece("Mighty",
-				PieceFactory.newPiece(board, "King", playerColor, new int[] {4,4}));
-		Piece king2 = DecoratedPieceFactory.newDecoratedPiece("Mighty",
-				PieceFactory.newPiece(board, "King", playerColor, new int[] {6,6}));
+		Piece king = PieceFactory.newPiece(board, "Mighty King", playerColor, new int[] {4,4});
+		Piece king2 = PieceFactory.newPiece(board, "Mighty King", playerColor, new int[] {6,6});
+		
 		Piece intermittingPiece = PieceFactory.newPiece(board, "Queen", playerColor, new int[] {5,5});
 		Piece attacker = PieceFactory.newPiece(board, "Rook", opponentColor, new int[] {6,4});
 
@@ -94,10 +90,8 @@ public class GameConditionTest {
 	
 	@Test
 	public void mightyNotAttackedMultipleKingsPinnedPieceTest() {
-		Piece king = DecoratedPieceFactory.newDecoratedPiece("Mighty",
-				PieceFactory.newPiece(board, "King", playerColor, new int[] {4,4}));
-		Piece attackedKing = DecoratedPieceFactory.newDecoratedPiece("Mighty",
-				PieceFactory.newPiece(board, "King", playerColor, new int[] {6,6}));
+		Piece king = PieceFactory.newPiece(board, "Mighty King", playerColor, new int[] {4,4});
+		Piece attackedKing = PieceFactory.newPiece(board, "Mighty King", playerColor, new int[] {6,6});
 		Piece intermittingPiece = PieceFactory.newPiece(board, "Queen", playerColor, new int[] {5,4});
 		Piece attacker = PieceFactory.newPiece(board, "Rook", opponentColor, new int[] {6,4});
 

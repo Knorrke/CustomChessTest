@@ -5,6 +5,8 @@ import static org.mockito.Mockito.*;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Matchers;
 
 import model.Board;
 import model.PieceFactory;
@@ -12,9 +14,9 @@ import model.pieces.Dummy;
 import model.pieces.King;
 import model.pieces.Piece;
 import model.pieces.decorator.AdditionalMoveAllowanceDecorator;
-import model.pieces.decorator.DecoratedPieceFactory;
 import model.pieces.decorator.KnightRiding;
 import model.pieces.decorator.Mighty;
+import model.pieces.decorator.AxeSwinging;
 import player.PlayerColor;
 
 public class DecoratorTest {
@@ -31,28 +33,20 @@ public class DecoratorTest {
 	
 	@Test
 	public void factoryTest() {
-		Piece piece = DecoratedPieceFactory.newDecoratedPiece("Mighty KnightRiding",
-				PieceFactory.newPiece(boardmock, "King", playerColor, new int[] {2,2}));
+		Piece piece = PieceFactory.newPiece(boardmock, "Mighty KnightRiding King", playerColor, new int[] {2,2});
 		assertTrue("Piece should be of class Mighty", piece.getType().contains(Mighty.class));
 		assertTrue("Piece should be of class KnightRiding", piece.getType().contains(KnightRiding.class));
 		assertTrue("Piece should be of class King", piece.getType().contains(King.class));
 		assertFalse("Piece should not be of class Dummy", piece.getType().contains(Dummy.class));
+		assertFalse("Piece should not be of class AxeSwinging", piece.getType().contains(AxeSwinging.class));
 	}
+	
 	@Test
 	public void mightyTest(){
 		int x = 2, y = 2;
 		
-		int[][] testcases = {
-				new int[] {x+1,y+1},
-				new int[] {x-1,y-1},
-				new int[] {x+2,y+2}
-		};
-
-		boolean[] expectedValue = {
-				true,
-				false,
-				false
-		};
+		int[][] testcases = {{x+1,y+1}, {x-1,y-1}, {x+2,y+2}};
+		boolean[] expectedValue = {true, false, false};
 		
 		String[] description = {
 				"King should be able to move to adjacent square thats not attacked",
@@ -64,8 +58,7 @@ public class DecoratorTest {
 		when(boardmock.isAttacked(opponentColor,testcases[1])).thenReturn(true);
 		when(boardmock.isAttacked(opponentColor,testcases[2])).thenReturn(false);
 		
-		Piece king = DecoratedPieceFactory.newDecoratedPiece("Mighty",
-				PieceFactory.newPiece(boardmock, "King",playerColor,new int[] {x,y}));
+		Piece king = PieceFactory.newPiece(boardmock, "Mighty King",playerColor,new int[] {x,y});
 
 		for(int i=0; i<testcases.length; i++){
 			assertEquals(description[i], expectedValue[i], king.moveCorrect(testcases[i]));
@@ -76,8 +69,7 @@ public class DecoratorTest {
 	public void knightRidingNoKnightTest() {
 		int x = 2, y = 2;
 
-		Piece king = DecoratedPieceFactory.newDecoratedPiece("KnightRiding",
-				PieceFactory.newPiece(boardmock, "King",playerColor,new int[] {x,y}));
+		Piece king = PieceFactory.newPiece(boardmock, "KnightRiding King",playerColor,new int[] {x,y});
 
 		for(int i=-1; i<=1; i++) {
 			for(int j=-1; j<=1; j++) {				
@@ -96,8 +88,7 @@ public class DecoratorTest {
 		int x = 2, y = 2;
 
 		Piece knight = PieceFactory.newPiece(boardmock, "Knight", playerColor, new int[] {x+1,y+1});
-		Piece king = DecoratedPieceFactory.newDecoratedPiece("KnightRiding",
-				PieceFactory.newPiece(boardmock, "King",playerColor,new int[] {x,y}));
+		Piece king = PieceFactory.newPiece(boardmock, "KnightRiding King",playerColor,new int[] {x,y});
 
 		for(int i=-1; i<=1; i++) {
 			for(int j=-1; j<=1; j++) {				
@@ -124,8 +115,7 @@ public class DecoratorTest {
 		Piece knight = new AdditionalMoveAllowanceDecorator(
 				PieceFactory.newPiece(boardmock, "Knight", playerColor, new int[] {x+1,y+1})) {};
 				
-		Piece king = DecoratedPieceFactory.newDecoratedPiece("KnightRiding",
-				PieceFactory.newPiece(boardmock, "King", playerColor, new int[] {x,y}));
+		Piece king = PieceFactory.newPiece(boardmock, "KnightRiding King", playerColor, new int[] {x,y});
 
 		for(int i=-1; i<=1; i++) {
 			for(int j=-1; j<=1; j++) {				
@@ -143,5 +133,24 @@ public class DecoratorTest {
 				king.moveCorrect(new int[] {x+1,y+2}));
 		assertFalse("King should not be able to move weird, even if adjacent to knight",
 				king.moveCorrect(new int[] {x+1,y+3}));
+	}
+	
+	@Test
+	public void AxeSwingingTest() {
+		//AxeSwinging Piece can additionally move 2,0 or 0,2 for attacking, but can't jump.
+		int[] piecePos = {2,2}, opponentVPos = {2,4}, opponentHPos = {4,2};
+		
+		Piece axeBishop = PieceFactory.newPiece(boardmock, "AxeSwinging Bishop", playerColor, piecePos);
+		
+		when(boardmock.isPieceOfColorOnSquare(opponentColor, opponentVPos)).thenReturn(true);
+		when(boardmock.isPieceOfColorOnSquare(opponentColor, opponentHPos)).thenReturn(true);
+		doReturn(false).when(boardmock).isPieceOfColorOnSquare(
+				ArgumentMatchers.eq(opponentColor), 
+				ArgumentMatchers.argThat((int[] pos) -> !pos.equals(opponentVPos) && !pos.equals(opponentHPos)));
+		
+		assertTrue("AxeBishop should be able to capture opponentPiece vertically", axeBishop.moveCorrect(opponentVPos));
+		assertTrue("AxeBishop should be able to capture opponentPiece horizontally", axeBishop.moveCorrect(opponentVPos));
+		assertFalse("AxeBishop should not be able to move axe-like without capture", axeBishop.moveCorrect(new int[] {2,0}));
+		assertTrue("AxeBishop should be able to move bishop-like without capture", axeBishop.moveCorrect(new int[] {1,1}));
 	}
 }
