@@ -33,6 +33,8 @@ public class GameConditionTest {
 		Piece king = PieceFactory.newPiece(board, "Mighty King", playerColor, new int[] {4,4});
 		Piece attacker = PieceFactory.newPiece(board, "Rook", opponentColor, new int[] {6,5});
 		
+		board.addPieces(king, attacker);
+		
 		assertTrue("Check is allowed", cond.isGameIntegrityEnsured(board, attacker, new int[] {6,4}));
 		assertFalse("Move into check is not allowed", cond.isGameIntegrityEnsured(board, king, new int[] {4,5}));
 	}
@@ -43,9 +45,7 @@ public class GameConditionTest {
 		Piece pinnedPiece = PieceFactory.newPiece(board, "Bishop", playerColor, new int[] {5,4});
 		Piece attacker = PieceFactory.newPiece(board, "Rook", opponentColor, new int[] {6,4});
 		
-		board.addPiece(king);
-		board.addPiece(pinnedPiece);
-		board.addPiece(attacker);
+		board.addPieces(king, pinnedPiece, attacker);
 
 		assertFalse("Pinned bishop should not be able to move", 
 				cond.isGameIntegrityEnsured(board, pinnedPiece, new int[] {6,5}));
@@ -57,9 +57,7 @@ public class GameConditionTest {
 		Piece intermittingPiece = PieceFactory.newPiece(board, "Bishop", playerColor, new int[] {4,3});
 		Piece attacker = PieceFactory.newPiece(board, "Rook", opponentColor, new int[] {6,4});
 		
-		board.addPiece(king);
-		board.addPiece(intermittingPiece);
-		board.addPiece(attacker);
+		board.addPieces(king, intermittingPiece, attacker);
 
 		assertFalse("Bishop should not be able to move normally if king is attacked",
 				cond.isGameIntegrityEnsured(board, intermittingPiece, new int[] {6,5}));
@@ -75,10 +73,7 @@ public class GameConditionTest {
 		Piece intermittingPiece = PieceFactory.newPiece(board, "Queen", playerColor, new int[] {5,5});
 		Piece attacker = PieceFactory.newPiece(board, "Rook", opponentColor, new int[] {6,4});
 
-		board.addPiece(king);
-		board.addPiece(king2);
-		board.addPiece(intermittingPiece);
-		board.addPiece(attacker);
+		board.addPieces(king, king2, intermittingPiece, attacker);
 
 		assertFalse("Queen should not be able to move normally if kings are attacked",
 				cond.isGameIntegrityEnsured(board, intermittingPiece, new int[] {6,5}));
@@ -95,10 +90,7 @@ public class GameConditionTest {
 		Piece intermittingPiece = PieceFactory.newPiece(board, "Queen", playerColor, new int[] {5,4});
 		Piece attacker = PieceFactory.newPiece(board, "Rook", opponentColor, new int[] {6,4});
 
-		board.addPiece(king);
-		board.addPiece(attackedKing);
-		board.addPiece(intermittingPiece);
-		board.addPiece(attacker);
+		board.addPieces(king, attackedKing, intermittingPiece, attacker);
 
 		assertFalse("Queen should not be able to move normally if kings are attacked",
 				cond.isGameIntegrityEnsured(board, intermittingPiece, new int[] {6,5}));

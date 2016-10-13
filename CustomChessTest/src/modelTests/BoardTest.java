@@ -6,12 +6,13 @@ import org.junit.Test;
 
 import model.Board;
 import model.Square;
+import model.SquareColor;
 
 public class BoardTest {
 
 	@Test
 	public void setupTest() {
-		Square field = new Square();
+		Square field = new Square(SquareColor.BLACK);
 		assertEquals("created Fields should be empty", field.getPiece(), null);
 		
 		Board board = new Board(8,8);
