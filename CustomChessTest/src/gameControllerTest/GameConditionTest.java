@@ -5,8 +5,8 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import gameController.gameConditionsStrategy.GameCondition;
-import gameController.gameConditionsStrategy.MightyNotAttacked;
+import gameController.gameConditionsStrategy.IntegrityConditions.GameIntegrityCondition;
+import gameController.gameConditionsStrategy.IntegrityConditions.MightyNotAttacked;
 import model.Board;
 import model.PieceFactory;
 import model.pieces.Piece;
@@ -14,7 +14,7 @@ import player.PlayerColor;
 
 public class GameConditionTest {
 
-	GameCondition cond;
+	GameIntegrityCondition cond;
 	Board board;
 	PlayerColor playerColor;
 	PlayerColor opponentColor;

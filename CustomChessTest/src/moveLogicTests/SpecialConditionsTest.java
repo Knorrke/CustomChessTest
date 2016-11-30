@@ -8,10 +8,14 @@ import org.junit.Test;
 
 import static helper.Helper.*;
 
+import gameController.GameController;
+import gameController.StandardGameController;
 import model.Board;
 import model.PieceFactory;
+import model.pieces.Pawn;
 import model.pieces.Piece;
 import moveLogic.specialMoveConditionStrategy.Castling;
+import moveLogic.specialMoveConditionStrategy.EnPassant;
 import moveLogic.specialMoveConditionStrategy.OnlyCapture;
 import moveLogic.specialMoveConditionStrategy.OnlyIfAttacked;
 import moveLogic.specialMoveConditionStrategy.OnlyIfFreeWay;
@@ -190,31 +194,54 @@ public class SpecialConditionsTest {
 	public void castlingTest() {
 		condition = new Castling();
 		Board board = new Board(8, 8);
-		Piece king = PieceFactory.newPiece(board, "Mighty King", ownColor, pos(4,0));
-		Piece rook = PieceFactory.newPiece(board, "Rook", ownColor,pos(0,0));
-		Piece rook2 = PieceFactory.newPiece(board, "Rook", ownColor,pos(7,0));
-		Piece opponentDummy = PieceFactory.newPiece(board, "Dummy", opponentColor, pos(1,0));
+		Piece king = PieceFactory.newPiece(board, "Mighty King", ownColor, pos("e1"));
+		Piece rook = PieceFactory.newPiece(board, "Rook", ownColor,pos("a1"));
+		Piece rook2 = PieceFactory.newPiece(board, "Rook", ownColor,pos("h1"));
+		Piece opponentDummy = PieceFactory.newPiece(board, "Dummy", opponentColor, pos("b1"));
 		board.addPieces(king, rook, rook2, opponentDummy);
 		
 		assertTrue("Castling should be allowed if no piece inbetween", 
-				condition.isMatchingSpecialCondition(board, king, pos(6,0)));
+				condition.isMatchingSpecialCondition(board, king, pos("g1")));
 		assertFalse("Castling should not be allowed if a piece inbetween", 
-				condition.isMatchingSpecialCondition(board, king, pos(2,0)));
+				condition.isMatchingSpecialCondition(board, king, pos("c1")));
 		
-		Piece opponentRook = PieceFactory.newPiece(board, "Rook", opponentColor, pos(4,5));
+		Piece opponentRook = PieceFactory.newPiece(board, "Rook", opponentColor, pos("e6"));
 		board.addPiece(opponentRook);
 		assertFalse("Castling should not work if king is in check", 
-				condition.isMatchingSpecialCondition(board, king, pos(6,0)));
-		board.setPieceToNewPosition(opponentRook, pos(5,5));
+				condition.isMatchingSpecialCondition(board, king, pos("g1")));
+		board.setPieceToNewPosition(opponentRook, pos("f6"));
 		assertFalse("Castling should not be allowed if king moves through check", 
-				condition.isMatchingSpecialCondition(board, king, pos(6,0)));
+				condition.isMatchingSpecialCondition(board, king, pos("g1")));
 		
 		board.removePiece(opponentRook);
-		assertTrue("Removing should work...", condition.isMatchingSpecialCondition(board, king, pos(6,0)));
+		assertTrue("Removing should work...", condition.isMatchingSpecialCondition(board, king, pos("g1")));
 		rook2.setMoved(true);
-		assertFalse("Can't castle if rook has already moved", condition.isMatchingSpecialCondition(board, king, pos(6,0)));
+		assertFalse("Can't castle if rook has already moved", condition.isMatchingSpecialCondition(board, king, pos("g1")));
 		rook2.setMoved(false);
 		king.setMoved(true);
-		assertFalse("Can't castle if king has already moved", condition.isMatchingSpecialCondition(board, king, pos(6,0)));
+		assertFalse("Can't castle if king has already moved", condition.isMatchingSpecialCondition(board, king, pos("g1")));
+	}
+	
+	@Test
+	public void enpassantTest() {
+		condition = new EnPassant();
+		GameController game = new StandardGameController();
+		assertTrue(game.move(pos("e2"),pos("e4"))); //Weiss
+		assertTrue(game.move(pos("c7"),pos("c5"))); //Schwarz
+		assertTrue(game.move(pos("e4"), pos("e5"))); //Weiss
+		assertTrue(game.move(pos("d7"), pos("d5"))); //Schwarz
+		
+		assertTrue("En passant should be allowed after move of pawn", game.move(pos("e5"),pos("d6"))); //Weiss
+		assertNull("Pawn on d5 should be taken", game.getBoard().getPieceOfSquare(pos("d5")));
+		
+		assertTrue(game.move(pos("c5"), pos("c4"))); //Schwarz
+		assertTrue(game.move(pos("d2"), pos("d4"))); //Weiss
+		
+		//intermediate move
+		assertTrue(game.move(pos("b8"),pos("c6"))); //Schwarz
+		assertTrue(game.move(pos("g1"),pos("f3"))); //Weiss
+		
+		assertFalse("En passant should not be allowed after intermediate move", game.move(pos("c4"),pos("d3"))); //(Schwarz)
+		assertTrue("Pawn on d4 should still be there", game.getBoard().getPieceOfSquare(pos("d4")).getType().contains(Pawn.class));
 	}
 }
