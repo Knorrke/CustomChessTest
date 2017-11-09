@@ -35,8 +35,10 @@ public class GameConditionTest {
 		
 		board.addPieces(king, attacker);
 		
-		assertTrue("Check is allowed", cond.isGameIntegrityEnsured(board, attacker, new int[] {6,4}));
-		assertFalse("Move into check is not allowed", cond.isGameIntegrityEnsured(board, king, new int[] {4,5}));
+		assertTrue("Check is allowed", 
+				cond.isGameIntegrityEnsured(board, attacker.getPossibleMoves(new int[] {6,4}).get(0)));
+		assertFalse("Move into check is not allowed", king.getPossibleMoves(new int[] {4,5}).size()>0 
+				&& cond.isGameIntegrityEnsured(board, king.getPossibleMoves(new int[] {4,5}).get(0)));
 	}
 	
 	@Test
@@ -48,7 +50,7 @@ public class GameConditionTest {
 		board.addPieces(king, pinnedPiece, attacker);
 
 		assertFalse("Pinned bishop should not be able to move", 
-				cond.isGameIntegrityEnsured(board, pinnedPiece, new int[] {6,5}));
+				cond.isGameIntegrityEnsured(board, pinnedPiece.getPossibleMoves(new int[] {6,5}).get(0)));
 	}
 	
 	@Test
@@ -60,9 +62,9 @@ public class GameConditionTest {
 		board.addPieces(king, intermittingPiece, attacker);
 
 		assertFalse("Bishop should not be able to move normally if king is attacked",
-				cond.isGameIntegrityEnsured(board, intermittingPiece, new int[] {6,5}));
+				cond.isGameIntegrityEnsured(board, intermittingPiece.getPossibleMoves(new int[] {6,5}).get(0)));
 		assertTrue("Bishop should be able move between king and attacker", 
-				cond.isGameIntegrityEnsured(board, intermittingPiece, new int[] {5,4}));
+				cond.isGameIntegrityEnsured(board, intermittingPiece.getPossibleMoves(new int[] {5,4}).get(0)));
 	}
 	
 	@Test
@@ -76,11 +78,11 @@ public class GameConditionTest {
 		board.addPieces(king, king2, intermittingPiece, attacker);
 
 		assertFalse("Queen should not be able to move normally if kings are attacked",
-				cond.isGameIntegrityEnsured(board, intermittingPiece, new int[] {6,5}));
+				cond.isGameIntegrityEnsured(board, intermittingPiece.getPossibleMoves(new int[] {6,5}).get(0)));
 		assertFalse("Queen should not be able move between king and attacker king2 attacked", 
-				cond.isGameIntegrityEnsured(board, intermittingPiece, new int[] {5,4}));
+				cond.isGameIntegrityEnsured(board, intermittingPiece.getPossibleMoves(new int[] {5,4}).get(0)));
 		assertTrue("Queen should be able to capture attacker", 
-				cond.isGameIntegrityEnsured(board, intermittingPiece, new int[] {6,4}));
+				cond.isGameIntegrityEnsured(board, intermittingPiece.getPossibleMoves(new int[] {6,4}).get(0)));
 	}
 	
 	@Test
@@ -92,17 +94,21 @@ public class GameConditionTest {
 
 		board.addPieces(king, attackedKing, intermittingPiece, attacker);
 
-		assertFalse("Queen should not be able to move normally if kings are attacked",
-				cond.isGameIntegrityEnsured(board, intermittingPiece, new int[] {6,5}));
-		assertFalse("Pinned Queen should not be able move between other king and attacker", 
-				cond.isGameIntegrityEnsured(board, intermittingPiece, new int[] {6,5}));
+		assertTrue("Queen should not be able to move normally if kings are attacked",
+				intermittingPiece.getPossibleMoves(new int[] {6,5}).isEmpty() ||
+				!cond.isGameIntegrityEnsured(board, intermittingPiece.getPossibleMoves(new int[] {6,5}).get(0)));
+		assertTrue("Pinned Queen should not be able move between other king and attacker", 
+				intermittingPiece.getPossibleMoves(new int[] {6,5}).isEmpty() ||
+				!cond.isGameIntegrityEnsured(board, intermittingPiece.getPossibleMoves(new int[] {6,5}).get(0)));
 		assertTrue("Queen should be able to capture attacker", 
-				cond.isGameIntegrityEnsured(board, intermittingPiece, new int[] {6,4}));
+				cond.isGameIntegrityEnsured(board, intermittingPiece.getPossibleMoves(new int[] {6,4}).get(0)));
 		assertTrue("Attacked king should be able to move", 
-				cond.isGameIntegrityEnsured(board, attackedKing, new int[] {7,7}));
-		assertFalse("Attacked king should not be able to move to attacked square", 
-				cond.isGameIntegrityEnsured(board, attackedKing, new int[] {6,7}));
-		assertFalse("Not attacked king should not be able to move", 
-				cond.isGameIntegrityEnsured(board, king, new int[] {4,3}));
+				cond.isGameIntegrityEnsured(board, attackedKing.getPossibleMoves(new int[] {7,7}).get(0)));
+		assertTrue("Attacked king should not be able to move to attacked square", 
+				attackedKing.getPossibleMoves(new int[] {6,7}).isEmpty() ||
+				!cond.isGameIntegrityEnsured(board, attackedKing.getPossibleMoves(new int[] {6,7}).get(0)));
+		assertTrue("Not attacked king should not be able to move", 
+				king.getPossibleMoves(new int[] {4,3}).isEmpty() ||
+				!cond.isGameIntegrityEnsured(board, king.getPossibleMoves(new int[] {4,3}).get(0)));
 	}
 }

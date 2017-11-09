@@ -197,8 +197,8 @@ public class SpecialConditionsTest {
 		Piece king = PieceFactory.newPiece(board, "Mighty King", ownColor, pos("e1"));
 		Piece rook = PieceFactory.newPiece(board, "Rook", ownColor,pos("a1"));
 		Piece rook2 = PieceFactory.newPiece(board, "Rook", ownColor,pos("h1"));
-		Piece opponentDummy = PieceFactory.newPiece(board, "Dummy", opponentColor, pos("b1"));
-		board.addPieces(king, rook, rook2, opponentDummy);
+		Piece opponentPiece = PieceFactory.newPiece(board, "Pawn", opponentColor, pos("b1"));
+		board.addPieces(king, rook, rook2, opponentPiece);
 		
 		assertTrue("Castling should be allowed if no piece inbetween", 
 				condition.isMatchingSpecialCondition(board, king, pos("g1")));
