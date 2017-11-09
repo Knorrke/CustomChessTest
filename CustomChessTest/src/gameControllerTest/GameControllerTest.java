@@ -1,5 +1,6 @@
 package gameControllerTest;
 
+
 import static org.junit.Assert.*;
 
 import org.junit.Test;
@@ -14,7 +15,7 @@ import player.PlayerColor;
 
 public class GameControllerTest {
 
-	/*@Test
+	@Test
 	public void standardGameTest() {
 		GameController gameController = new StandardGameController();
 	    assertEquals("Should be whites turn", PlayerColor.WHITE, gameController.getCurrentPlayer());
@@ -37,7 +38,7 @@ public class GameControllerTest {
 		//check
 		assertFalse("White can't move A-pawn in check", gameController.move(new int[] {0,1}, new int[] {0,3}));
 		assertTrue("White can intermit the check", gameController.move(new int[] {6,1}, new int[] {6,2}));		
-	}*/
+	}
 	
 	@Test
 	public void moveResetTest() {
